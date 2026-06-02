@@ -1,0 +1,199 @@
+{
+  "_meta": {
+    "language": "Español",
+    "code": "es"
+  },
+  "nav": {
+    "brand": "Calculadora de Riesgo Diabetes",
+    "reset": "Reiniciar",
+    "restoreProfile": "Restaurar valores del perfil",
+    "resetDefaults": "Restablecer valores predeterminados",
+    "riskTimeline": "Línea Temporal de Riesgo",
+    "selectProfile": "Seleccionar Perfil",
+    "language": "Seleccionar Idioma"
+  },
+  "hero": {
+    "title": "Riesgo de Diabetes a 9 Años",
+    "expandLabel": "¿Qué significa eso?",
+    "subtitle": "Basado en el modelo de regresión logística del Estudio ARIC (Schmidt et al. 2005)"
+  },
+  "factors": {
+    "age": "Edad",
+    "sex": "Sexo",
+    "race": "Etnia",
+    "parentHist": "Diabetes Parental",
+    "sbp": "Presión Arterial",
+    "waist": "Cintura",
+    "height": "Altura",
+    "fastGlu": "Glucosa en Ayunas",
+    "cholHDL": "Colesterol HDL",
+    "cholTri": "Grasas en Sangre (Triglicéridos)"
+  },
+  "units": {
+    "years": "años",
+    "male": "Masculino",
+    "female": "Femenino",
+    "other": "Otro",
+    "black": "Negro",
+    "yes": "Sí",
+    "no": "No",
+    "us": "US",
+    "si": "SI"
+  },
+  "sections": {
+    "demographic": "Datos Demográficos",
+    "clinical": "Datos Clínicos",
+    "treatments": "Recomendaciones de Tratamiento",
+    "contributions": "Contribuciones de Factores de Riesgo"
+  },
+  "summary": {
+    "age": "Edad",
+    "glucose": "Glucosa",
+    "waist": "Cintura",
+    "bp": "Presión arterial",
+    "hdl": "HDL",
+    "tg": "TG"
+  },
+  "treatments": {
+    "fastGlu": {
+      "title": "Manejo de la Glucosa en Ayunas",
+      "therapy1_name": "Medicación Estándar",
+      "therapy1_desc": "La metformina suele ser el primer paso para ayudar a controlar los niveles de azúcar en sangre.",
+      "therapy2_name": "Protección Cardíaca y Renal",
+      "therapy2_desc": "Si tiene problemas cardíacos o renales, pregunte a su médico sobre medicamentos más nuevos que protegen específicamente estos órganos (inhibidores de SGLT2 o GLP-1) mientras también apoyan la pérdida de peso."
+    },
+    "sbp": {
+      "title": "Control de la Presión Arterial",
+      "therapy1_name": "Medicamentos Combinados",
+      "therapy1_desc": "Se recomienda comenzar con una combinación de diferentes medicamentos para la presión arterial (por ejemplo, inhibidores del RAS y CCB).",
+      "therapy2_name": "Dieta Saludable para el Corazón",
+      "therapy2_desc": "La restricción del alcohol y el consumo de sodio, el aumento del consumo de vegetales, el uso de productos lácteos bajos en grasa pueden bajar la presión arterial naturalmente."
+    },
+    "cholHDL": {
+      "title": "Mejora del Colesterol HDL",
+      "therapy1_name": "Ejercicio Regular",
+      "therapy1_desc": "Apunte a 150 minutos por semana de actividad como caminar rápido, o 75 minutos de ejercicio intenso.",
+      "therapy2_name": "Medicación",
+      "therapy2_desc": "Los inhibidores de CETP y los medicamentos reductores de colesterol (estatinas) también pueden ayudar a aumentar el HDL."
+    },
+    "cholTri": {
+      "title": "Tratamiento de Grasas en Sangre (Triglicéridos)",
+      "therapy1_name": "Estilo de Vida Saludable",
+      "therapy1_desc": "Dejar de fumar y comer grasas saludables (aceite de oliva, nueces, pescado) ayudan y deben intentarse primero.",
+      "therapy2_name": "Aceite de Pescado Recetado",
+      "therapy2_desc": "Si las grasas en sangre (triglicéridos) permanecen altas, se podría considerar un aceite de pescado especial recetado (etilo de icosapento).",
+      "therapy3_name": "Medicación",
+      "therapy3_desc": "Los fibratos o los medicamentos reductores de colesterol (estatinas) también pueden ayudar a reducir los triglicéridos."
+    },
+    "waist": {
+      "title": "Manejo del Peso",
+      "therapy1_name": "Dieta y Ejercicio",
+      "therapy1_desc": "Reducir las calorías diarias y hacer más ejercicio conduce a una pérdida de peso constante.",
+      "therapy2_name": "Medicamentos",
+      "therapy2_desc": "Los medicamentos hipoglucemiantes con efectos adicionales reductores de peso (por ejemplo GLP-1RA) también pueden ayudar.",
+      "surgical": "Opciones Quirúrgicas",
+      "surgical_desc": "Para obesidad significativa con problemas de salud, se puede discutir la cirugía de pérdida de peso."
+    }
+  },
+  "buttons": {
+    "simulate": "Simular Tratamiento",
+    "simulateActive": "Simulando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "continue": "Continuar",
+    "createProfile": "Crear Perfil",
+    "add": "Añadir",
+    "export": "Exportar .xlsx / .drc",
+    "import": "Importar .xlsx / .drc",
+    "scan": "Escanear Informe Lab",
+    "undoTreatment": "Deshacer tratamiento para {factor}",
+    "undo": "Deshacer",
+    "confirm": "Confirmar",
+    "ok": "OK"
+  },
+  "patientManager": {
+    "title": "Mis Perfiles",
+    "activeProfile": "Perfil Activo",
+    "noProfile": "Ningún perfil seleccionado",
+    "savedProfiles": "Perfiles Guardados",
+    "addNew": "Añadir Nuevo Perfil",
+    "placeholder": "Nombre del perfil...",
+    "empty": "Aún no hay perfiles guardados.",
+    "importExport": "Importar / Exportar / OCR"
+  },
+  "timeline": {
+    "title": "Línea Temporal de Riesgo",
+    "hint": "Simule tratamientos para rastrear cambios de riesgo a lo largo del tiempo",
+    "setBaseline": "Establecer Línea Base",
+    "snapshot": "Instantánea",
+    "empty": "Establezca una línea base y añada instantáneas para rastrear su riesgo a través de escenarios."
+  },
+  "models": {
+    "clinical": {
+      "name": "Solo Clínico",
+      "description": "Solo medidas corporales y datos demográficos, sin análisis de sangre necesario"
+    },
+    "clinicalGlucose": {
+      "name": "Clínico + Glucosa",
+      "description": "Valores clínicos más glucosa en ayunas"
+    },
+    "clinicalGlucoseLipids": {
+      "name": "Clínico + Glucosa + Lípidos",
+      "description": "Modelo completo con todos los valores de laboratorio"
+    },
+    "accuracy": {
+      "basis": "Básico",
+      "gut": "Bueno",
+      "beste": "Mejor"
+    }
+  },
+  "zones": {
+    "normal": "Normal",
+    "elevated": "Elevado",
+    "high": "Alto",
+    "veryHigh": "Muy alto",
+    "diabetes": "Diabetes",
+    "prediabetes": "Prediabetes",
+    "low": "Bajo"
+  },
+  "modals": {
+    "profileWarning": {
+      "title": "¿Restablecer todos los valores?",
+      "message": "Tiene cambios sin guardar. Al restablecer se perderán sus datos actuales.",
+      "message1": "Tiene cambios sin guardar.",
+      "message2": "Al restablecer se perderán sus datos actuales.",
+      "create": "Crear Perfil",
+      "continue": "Restablecer",
+      "cancel": "Cancelar"
+    },
+    "simulationSaveWarning": {
+      "message": "Hay una simulación de tratamiento activa. ¿Qué desea guardar?",
+      "saveOriginal": "Guardar valores originales",
+      "saveSimulated": "Guardar valores simulados",
+      "saveBoth": "Guardar ambos",
+      "suffixOriginal": "(Original)",
+      "suffixSimulated": "(Simulado)"
+    },
+    "simulationCloseWarning": {
+      "message": "Ha guardado un perfil. La simulación sigue activa. ¿Qué desea hacer?",
+      "messageBoth": "Ha guardado ambos perfiles. ¿Cuál desea cargar?",
+      "loadProfile": "Cargar perfil",
+      "loadOriginal": "Cargar perfil original",
+      "loadSimulated": "Cargar perfil simulado",
+      "keepCurrent": "Mantener estado actual"
+    },
+    "ocr": {
+      "title": "Escanear Informe Lab",
+      "instructions": "Tome una foto o suba su informe de laboratorio",
+      "camera": "Cámara",
+      "upload": "Subir Archivo",
+      "review": "Revisar Resultados",
+      "confidence_high": "Alta confianza",
+      "confidence_medium": "Confianza media",
+      "confidence_low": "Baja confianza"
+    }
+  },
+  "aria": {
+    "simulatedSlider": "(simulado)"
+  }
+}

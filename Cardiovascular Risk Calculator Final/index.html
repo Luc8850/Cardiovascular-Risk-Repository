@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSP: 'unsafe-inline' in style-src is required for JS dynamic styling (element.style).
+         Mitigated by strict script-src, object-src 'none', and base-uri/form-action restrictions.
+         Domains: cdn.sheetjs.com (Excel I/O), cdn.jsdelivr.net (Tesseract.js/PDF.js),
+         tessdata.projectnaptha.com (OCR language data), fonts.googleapis.com (web fonts).
+         data:/blob: in connect-src/img-src required by Tesseract.js Web Worker & OCR pipeline.
+         wasm-unsafe-eval required by SheetJS WASM module.
+         frame-ancestors 'none' in <meta> CSP is enforced by Chromium/Firefox and
+         provides clickjacking protection for the file:// and static-host deployment. -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   script-src 'self' 'wasm-unsafe-eval' https://cdn.sheetjs.com https://cdn.jsdelivr.net;
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+                   font-src https://fonts.gstatic.com https://fonts.googleapis.com;
+                   connect-src 'self' https://cdn.jsdelivr.net https://tessdata.projectnaptha.com data: blob:;
+                   worker-src 'self' blob:;
+                   img-src 'self' data: blob:;
+                   object-src 'none';
+                   base-uri 'self';
+                   form-action 'self';
+                   frame-ancestors 'none';">
+    <title>Cardiovascular Risk Calculator</title>
+    <meta name="theme-color" content="#f2f4f8">
+
+    <!-- Google Fonts -->
+    <!-- Note: SRI hash should be computed for the live stylesheet for production use -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" crossorigin="anonymous">
+    <!-- Lucide Icons (local) -->
+    <!-- SRI omitted: integrity checks on same-origin local scripts can fail
+         when opened via file:// protocol. SRI is intended for CDN/third-party resources. -->
+    <script src="js/lib/lucide.min.js"></script>
+
+    <!-- SheetJS for Excel Import/Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"
+            integrity="sha384-QCIdq2UMVEoSRhR3ZWZwdz2/pivLowr+eokFMdYyukq7qI26VYRxFa4Nl6FKetmL"
+            crossorigin="anonymous"></script>
+
+    <!-- Prevent dark mode FOUC: apply theme class before first paint -->
+    <script src="js/theme-init.js"></script>
+
+    <!-- Application Stylesheet -->
+    <link rel="stylesheet" href="style.css?v=unit-toggle-1">
+</head>
+<body>
+
+<a href="#main-content" class="visually-hidden focusable-skip">Skip to main content</a>
+
+<!-- ===================== TOP NAV ===================== -->
+<nav class="top-nav">
+    <div class="nav-inner">
+        <h1 class="nav-brand">
+            <i data-lucide="activity" class="lucide-icon"></i>
+            <span data-i18n="nav.brand">Cardiovascular Risk Calculator</span>
+        </h1>
+        <div class="nav-actions">
+            <button id="resetBtn" type="button" class="btn-reset" aria-label="Reset to defaults" title="Reset to defaults">
+                <i data-lucide="rotate-ccw" class="lucide-icon"></i>
+            </button>
+            <!-- Patient Management Button -->
+            <button id="patientMenuBtn" type="button" class="btn-patient-menu" aria-label="Manage profiles">
+                <i data-lucide="user" class="lucide-icon"></i>
+                <span class="patient-name-label" id="patientNameLabel" data-i18n="nav.selectProfile">Select Profile</span>
+                <i data-lucide="chevron-down" class="lucide-icon patient-chevron"></i>
+            </button>
+            <!-- Settings Button -->
+            <button id="settingsBtn" type="button" class="btn-settings" aria-label="Settings" aria-expanded="false">
+                <i data-lucide="settings" class="lucide-icon"></i>
+                <span class="settings-label" data-i18n="nav.settings">Settings</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Settings Panel -->
+<div id="settingsPanel" class="settings-panel" hidden>
+    <div class="settings-panel-inner">
+        <!-- Prediction Model Option -->
+        <div class="settings-option" id="settings-unit-option">
+            <span class="settings-option-label" data-i18n="settings.model">Prediction Model</span>
+            <button id="settingsModelBtn" type="button" class="btn-settings-model" aria-label="Select prediction model" aria-expanded="false">
+                <i data-lucide="layers" class="lucide-icon"></i>
+                <span class="settings-model-label" id="settingsModelLabel">Basic Model</span>
+                <i data-lucide="chevron-right" class="lucide-icon lang-chevron"></i>
+            </button>
+            <!-- Model Dropdown in Settings (expands downward) -->
+            <div id="settingsModelDropdown" class="settings-model-dropdown" role="menu" hidden>
+                <!-- Populated by JS -->
+            </div>
+        </div>
+        <!-- Language Option -->
+        <div class="settings-option">
+            <span class="settings-option-label" data-i18n="settings.language">Language</span>
+            <button id="settingsLangBtn" type="button" class="btn-language" aria-label="Select language" aria-expanded="false">
+                <span class="lang-flag" id="langFlagIcon" aria-hidden="true">
+                    <svg viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect x="0.5" y="0.5" width="19" height="13" rx="1" fill="#1e3a8a" stroke="currentColor" stroke-width="0.5"/>
+                        <path d="M0 0L20 14M20 0L0 14" stroke="#f8fafc" stroke-width="2.5"/>
+                        <path d="M0 0L20 14M20 0L0 14" stroke="#dc2626" stroke-width="1.5"/>
+                        <rect x="8.5" y="0" width="3" height="14" fill="#f8fafc"/>
+                        <rect x="0" y="5.5" width="20" height="3" fill="#f8fafc"/>
+                        <rect x="9" y="0" width="2" height="14" fill="#dc2626"/>
+                        <rect x="0" y="6" width="20" height="2" fill="#dc2626"/>
+                    </svg>
+                </span>
+                <span class="lang-code" id="langCode">EN</span>
+                <i data-lucide="chevron-right" class="lucide-icon lang-chevron"></i>
+            </button>
+            <!-- Language Dropdown in Settings (expands downward) -->
+            <div id="settingsLangDropdown" class="settings-lang-dropdown" role="menu" hidden>
+                <!-- Populated by JS -->
+            </div>
+        </div>
+        <!-- Dark Mode Option -->
+        <div class="settings-option">
+            <span class="settings-option-label" data-i18n="settings.darkMode">Dark Mode</span>
+            <button id="settingsDarkModeBtn" type="button" class="btn-settings-darkmode" aria-label="Toggle dark mode" aria-pressed="false">
+                <i data-lucide="moon" class="lucide-icon"></i>
+            </button>
+        </div>
+        <!-- Units Option -->
+        <div class="settings-option">
+            <span class="settings-option-label" data-i18n="settings.units">Units</span>
+            <div class="unit-toggle-nav settings-unit-toggle">
+                <span class="toggle-label-nav" id="unit-label-us">US</span>
+                <label class="toggle-switch-nav">
+                    <input type="checkbox" id="unit-toggle" aria-label="Switch between US and SI units" aria-checked="false">
+                    <span class="toggle-track-nav"></span>
+                </label>
+                <span class="toggle-label-nav" id="unit-label-si">SI</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== PATIENT MANAGEMENT DRAWER ===================== -->
+<div class="patient-overlay" id="patientOverlay"></div>
+<aside class="patient-drawer" id="patientDrawer" aria-label="Patient Management">
+    <div class="pd-header">
+        <h2 data-i18n="patientManager.title"><i data-lucide="users" class="lucide-icon"></i> My Profiles</h2>
+        <button class="pd-close-btn" id="patientDrawerClose" aria-label="Close patient menu">
+            <i data-lucide="x" class="lucide-icon"></i>
+        </button>
+    </div>
+
+    <!-- Active Patient Indicator -->
+    <div class="pd-active-patient" id="pdActivePatient">
+        <i data-lucide="user-round" class="lucide-icon"></i>
+        <span id="pdActiveLabel">No profile selected</span>
+    </div>
+
+    <!-- Patient List -->
+    <div class="pd-section">
+        <div class="pd-section-label" data-i18n="patientManager.savedProfiles">Saved Profiles</div>
+        <div class="pd-patient-list" id="pdPatientList">
+            <p class="pd-empty-msg">No profiles saved yet.</p>
+        </div>
+    </div>
+
+    <!-- Add New Patient -->
+    <div class="pd-section">
+        <div class="pd-section-label" data-i18n="patientManager.addNew">Add New Profile</div>
+        <div class="pd-add-form">
+            <input type="text" id="pdNewPatientName" class="pd-input" placeholder="Profile name…" maxlength="60" aria-label="Profile name" />
+            <button id="pdAddPatientBtn" type="button" class="pd-btn-add" data-i18n="buttons.addAndSave">
+                <i data-lucide="user-plus" class="lucide-icon"></i> Add &amp; Save Current Values
+            </button>
+        </div>
+    </div>
+
+    <!-- Import / Export / OCR -->
+    <div class="pd-section pd-io-section">
+        <div class="pd-section-label" data-i18n="patientManager.importExport">Import / Export / OCR</div>
+        <div class="pd-io-actions">
+            <button id="pdExportBtn" type="button" class="pd-btn-io" data-i18n="buttons.export">
+                <i data-lucide="download" class="lucide-icon"></i> Export .xlsx / .drc
+            </button>
+            <label class="pd-btn-io pd-btn-import" for="pdImportFile" data-i18n="buttons.import">
+                <i data-lucide="upload" class="lucide-icon"></i> Import .xlsx / .drc
+            </label>
+            <input type="file" id="pdImportFile" accept=".xlsx,.xls,.drc" style="display:none;" aria-label="Import patient profiles from Excel or encrypted .drc file" />
+            <!-- NEU: OCR Laborbericht Button -->
+            <button id="pdOCRBtn" type="button" class="pd-btn-io pd-btn-ocr" data-i18n="buttons.scan">
+                <i data-lucide="scan-line" class="lucide-icon"></i> Scan Lab Report
+            </button>
+        </div>
+        <!-- Hidden file inputs for OCR -->
+        <!-- Camera input: ONLY images, NO PDF (required for capture to work) -->
+        <input type="file" id="ocrCameraInput" accept="image/*" capture="environment" class="visually-hidden" aria-label="Take photo of laboratory report" />
+        <!-- File input: Images AND PDFs (for file upload) -->
+        <input type="file" id="ocrFileInput" accept="image/*,.pdf" multiple class="visually-hidden" aria-label="Upload laboratory report file(s)" />
+    </div>
+</aside>
+
+<!-- ===================== THREE-COLUMN MAIN GRID ===================== -->
+<main class="main-grid" id="main-content" aria-label="Risk Calculator">
+
+    <!-- ========== LEFT COLUMN: Risk Factor Inputs ========== -->
+    <section class="col-panel col-left" id="panel-input" aria-label="Risk Factor Inputs">
+        <div class="panel-header-bar">
+            <i data-lucide="sliders-horizontal" class="lucide-icon"></i>
+            <h2 data-i18n="sections.demographic">Patient Data</h2>
+            <button class="panel-collapse-btn" data-panel="panel-input" aria-label="Collapse section" aria-expanded="true">
+                <i data-lucide="chevron-up" class="lucide-icon"></i>
+            </button>
+        </div>
+        <p class="panel-subtitle">Please enter your data here</p>
+        <div class="panel-body">
+<div class="panel-body-inner">
+            <!-- Demographic Data Section with Collapse -->
+            <div class="section-collapse-header">
+                <button class="section-collapse-btn" data-target="non-mod-section" aria-controls="non-mod-section" aria-expanded="true">
+                    <i data-lucide="chevron-down" class="lucide-icon"></i>
+                </button>
+                <div class="input-section-label" data-i18n="sections.demographic">
+                    <i data-lucide="lock" class="lucide-icon"></i>
+                    Patient Data
+                </div>
+            </div>
+            <div class="section-summary" id="non-mod-summary">
+                <span id="summary-age">Age: 50</span> · <span id="summary-sex">Male</span> · <span id="summary-treatment">No BP treatment</span>
+            </div>
+
+            <div id="non-mod-section" class="collapsible-section">
+                <div class="collapsible-section-inner">
+                <div class="input-group" data-field="age">
+                    <div class="input-label-row">
+                        <label for="age-slider">
+                            <i data-lucide="calendar" class="lucide-icon ig-icon"></i>
+                            <span data-i18n="factors.age">Age</span>
+                        </label>
+                    </div>
+                    <div class="slider-wrapper">
+                        <input type="range" id="age-slider" min="30" max="74" value="50" step="1" class="slider" aria-label="Age slider" aria-describedby="age-unit">
+                        <div class="slider-track-bg" id="age-track"><div class="slider-fill" id="age-fill"></div></div>
+                    </div>
+                    <div class="slider-labels slider-labels-numeric"><span>30</span><span>52</span><span>74</span></div>
+                    <div class="factor-value-row">
+                        <input type="number" id="age-value" value="50" min="30" max="74" step="1" class="value-input" aria-label="Age in years" aria-describedby="age-unit">
+                        <span class="value-unit-label" id="age-unit" data-i18n="units.years">years</span>
+                        <span class="what-if-badge" id="what-if-age"></span>
+                    </div>
+                </div>
+
+                <div class="input-group" data-field="sex">
+                    <div class="input-label-row">
+                        <label for="sex-toggle"><i data-lucide="user" class="lucide-icon ig-icon"></i> <span data-i18n="factors.sex">Sex</span></label>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-option" data-i18n="units.female">Female</span>
+                        <label class="toggle-switch"><input type="checkbox" id="sex-toggle" checked aria-label="Sex: Male" aria-checked="true"><span class="toggle-slider"></span></label>
+                        <span class="toggle-option" data-i18n="units.male">Male</span>
+                    </div>
+                </div>
+
+                <div class="input-group" data-field="trtBp">
+                    <div class="input-label-row">
+                        <label for="trtBp-toggle"><i data-lucide="pill" class="lucide-icon ig-icon"></i> <span data-i18n="factors.trtBp">Treatment for Hypertension</span></label>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-option" data-i18n="units.no">No</span>
+                        <label class="toggle-switch"><input type="checkbox" id="trtBp-toggle" aria-label="Treatment for hypertension: No" aria-checked="false"><span class="toggle-slider"></span></label>
+                        <span class="toggle-option" data-i18n="units.yes">Yes</span>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Clinical Values Section with Collapse -->
+            <div class="section-collapse-header">
+                <button class="section-collapse-btn" data-target="mod-section" aria-controls="mod-section" aria-expanded="true">
+                    <i data-lucide="chevron-down" class="lucide-icon"></i>
+                </button>
+                <div class="input-section-label modifiable" data-i18n="sections.clinical">
+                    <i data-lucide="sliders-horizontal" class="lucide-icon"></i>
+                    Risk Factors
+                </div>
+            </div>
+            <div class="section-summary" id="mod-summary">
+                <span id="summary-sbp">SBP: 120 mmHg</span> · <span id="summary-smoking">Non-smoker</span> · <span id="summary-diabetes">No diabetes</span> · <span id="summary-hdl">HDL: 50 mg/dL</span> · <span id="summary-totalChol">Total-C: 180 mg/dL</span>
+            </div>
+
+            <div class="lab-unit-toggle-row" id="lab-unit-toggle-row">
+                <span class="lab-unit-toggle-label" data-i18n="settings.units">Units</span>
+                <div class="unit-toggle-nav lab-unit-toggle">
+                    <span class="toggle-label-nav" id="lab-unit-label-us">mg/dL</span>
+                    <label class="toggle-switch-nav">
+                        <input type="checkbox" id="lab-unit-toggle" aria-label="Switch lab units between mg/dL and mmol/L" aria-checked="false">
+                        <span class="toggle-track-nav"></span>
+                    </label>
+                    <span class="toggle-label-nav" id="lab-unit-label-si">mmol/L</span>
+                </div>
+            </div>
+
+            <div id="mod-section" class="collapsible-section">
+                <div class="collapsible-section-inner">
+
+            <div class="input-group" data-field="sbp">
+                <div class="input-label-row">
+                    <label for="sbp-slider"><i data-lucide="heart-pulse" class="lucide-icon ig-icon"></i> <span data-i18n="factors.sbp">Systolic Blood Pressure</span> <span class="unit-label">(mmHg)</span></label>
+                </div>
+                <div class="slider-wrapper">
+                    <input type="range" id="sbp-slider" min="90" max="200" value="120" step="1" class="slider" aria-label="Systolic blood pressure slider" aria-describedby="sbp-unit">
+                    <div class="slider-track-bg segmented" id="sbp-track">
+                        <div class="slider-segment safe" style="--flex:30"></div>
+                        <div class="slider-segment alert" style="--flex:10"></div>
+                        <div class="slider-segment danger" style="--flex:70"></div>
+                    </div>
+                </div>
+                <div class="slider-labels"><span style="--flex:30">Normal</span><span style="--flex:10">Elevated</span><span style="--flex:70">Hypertension</span></div>
+                <div class="factor-value-row">
+                    <input type="number" id="sbp-value" value="120" min="90" max="200" step="1" class="value-input" aria-label="Systolic blood pressure in mmHg" aria-describedby="sbp-unit">
+                    <span class="value-unit-label" id="sbp-unit">mmHg</span>
+                    <span class="what-if-badge" id="what-if-sbp"></span>
+                </div>
+            </div>
+
+            <div class="input-group" data-field="smoking">
+                <div class="input-label-row">
+                    <label for="smoking-toggle"><i data-lucide="cigarette" class="lucide-icon ig-icon"></i> <span data-i18n="factors.smoking">Smoking</span></label>
+                </div>
+                <div class="toggle-group">
+                    <span class="toggle-option" data-i18n="units.no">No</span>
+                    <label class="toggle-switch"><input type="checkbox" id="smoking-toggle" aria-label="Smoking: No" aria-checked="false"><span class="toggle-slider"></span></label>
+                    <span class="toggle-option" data-i18n="units.yes">Yes</span>
+                </div>
+            </div>
+
+            <div class="input-group" data-field="diabetes">
+                <div class="input-label-row">
+                    <label for="diabetes-toggle"><i data-lucide="circle-plus" class="lucide-icon ig-icon"></i> <span data-i18n="factors.diabetes">Diabetes</span></label>
+                </div>
+                <div class="toggle-group">
+                    <span class="toggle-option" data-i18n="units.no">No</span>
+                    <label class="toggle-switch"><input type="checkbox" id="diabetes-toggle" aria-label="Diabetes: No" aria-checked="false"><span class="toggle-slider"></span></label>
+                    <span class="toggle-option" data-i18n="units.yes">Yes</span>
+                </div>
+            </div>
+
+            <div class="input-group" data-field="cholHDL">
+                <div class="input-label-row">
+                    <label for="cholHDL-slider"><i data-lucide="droplets" class="lucide-icon ig-icon"></i> <span data-i18n="factors.cholHDL">HDL Cholesterol</span> <span class="unit-label" id="cholHDL-unit">(mg/dL)</span></label>
+                </div>
+                <div class="slider-wrapper">
+                    <input type="range" id="cholHDL-slider" min="20" max="100" value="50" step="1" class="slider" aria-label="HDL cholesterol slider" aria-describedby="cholHDL-value-unit">
+                    <div class="slider-track-bg segmented" id="cholHDL-track">
+                        <div class="slider-segment danger" style="--flex:20"></div>
+                        <div class="slider-segment alert" style="--flex:21"></div>
+                        <div class="slider-segment safe" style="--flex:40"></div>
+                    </div>
+                </div>
+                <div class="slider-labels"><span style="--flex:20">Low</span><span style="--flex:21">Borderline</span><span style="--flex:40">Good</span></div>
+                <div class="factor-value-row">
+                    <input type="number" id="cholHDL-value" value="50" min="20" max="100" step="1" class="value-input" aria-label="HDL cholesterol in mg/dL" aria-describedby="cholHDL-value-unit">
+                    <span class="value-unit-label" id="cholHDL-value-unit">mg/dL</span>
+                    <span class="what-if-badge" id="what-if-cholHDL"></span>
+                </div>
+            </div>
+
+            <div class="input-group" data-field="totalChol">
+                <div class="input-label-row">
+                    <label for="totalChol-slider"><i data-lucide="flask-conical" class="lucide-icon ig-icon"></i> <span data-i18n="factors.totalChol">Total Cholesterol</span> <span class="unit-label" id="totalChol-unit">(mg/dL)</span></label>
+                </div>
+                <div class="slider-wrapper">
+                    <input type="range" id="totalChol-slider" min="130" max="320" value="180" step="1" class="slider" aria-label="Total cholesterol slider" aria-describedby="totalChol-value-unit">
+                    <div class="slider-track-bg segmented" id="totalChol-track">
+                        <div class="slider-segment safe" style="--flex:70"></div>
+                        <div class="slider-segment alert" style="--flex:50"></div>
+                        <div class="slider-segment danger" style="--flex:70"></div>
+                    </div>
+                </div>
+                <div class="slider-labels"><span style="--flex:70">Desirable</span><span style="--flex:50">Borderline</span><span style="--flex:70">High</span></div>
+                <div class="factor-value-row">
+                    <input type="number" id="totalChol-value" value="180" min="130" max="320" step="1" class="value-input" aria-label="Total cholesterol in mg/dL" aria-describedby="totalChol-value-unit">
+                    <span class="value-unit-label" id="totalChol-value-unit">mg/dL</span>
+                    <span class="what-if-badge" id="what-if-totalChol"></span>
+                </div>
+                </div>
+            </div>
+</div>
+
+        </div>
+    </section>
+
+    <!-- ========== CENTER COLUMN: Risk Analysis ========== -->
+    <section class="col-panel col-center" id="panel-model" aria-label="Risk Analysis">
+        <div class="panel-header-bar" id="risk-score-card">
+            <i data-lucide="activity" class="lucide-icon"></i>
+            <h2 data-i18n="panels.riskAnalysisTitle">10-Year Cardiovascular Risk</h2>
+            <button class="panel-collapse-btn" data-panel="panel-model" aria-label="Collapse section" aria-expanded="true">
+                <i data-lucide="chevron-up" class="lucide-icon"></i>
+            </button>
+        </div>
+        <p class="panel-subtitle" data-i18n="panels.riskAnalysisSubtitle">Your cardiovascular risk and the factors behind it</p>
+        <div class="panel-body">
+<div class="panel-body-inner">
+
+            <!-- Risk Field 1: Your Risk -->
+            <div class="risk-field" id="your-risk-field">
+                <div class="risk-field-summary risk-field-summary--centered">
+                    <div class="risk-primary-row">
+                        <span class="risk-field-title risk-field-title--two-line" data-i18n="hero.yourRisk">Your Risk</span>
+                        <span class="risk-field-value risk-field-value--centered" aria-live="polite">
+                            <span class="risk-value-main">
+                                <span id="risk-percentage" class="risk-number">0.0</span><span class="risk-unit">%</span>
+                            </span>
+                        </span>
+                    </div>
+                    <span class="base-risk-chip" title="Risk based on age and sex with optimal modifiable markers">
+                        <span class="base-risk-label">Base Risk</span>
+                        <span class="base-risk-value"><span id="base-risk-percentage">0.0</span>%</span>
+                    </span>
+                </div>
+                <div class="risk-field-body">
+                    <button id="expandHeroBtn" type="button" class="btn-expand-hero" aria-expanded="false">
+                        <i data-lucide="info" class="lucide-icon"></i>
+                        <span id="expandHeroLabel" data-i18n="hero.expandLabel">What does that mean?</span>
+                        <i data-lucide="chevron-down" class="lucide-icon expand-hero-chevron"></i>
+                    </button>
+                    <div id="hero-expandable" class="hero-expandable">
+                        <div class="hero-expandable-inner">
+                            <div id="icon-array" class="icon-array-container"></div>
+                            <p class="icon-array-label" id="icon-array-label"></p>
+                            <p class="hero-subtitle" data-i18n="hero.subtitle">Based on the ARIC Study logistic regression model (Schmidt et al. 2005)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contributing Factors Title -->
+            <h3 class="contributing-factors-title" data-i18n="panels.contributingFactors">Contributing Factors</h3>
+
+            <!-- Contribution Chart -->
+            <div class="contribution-chart" id="contribution-chart" role="region" aria-label="Risk factor contribution chart"></div>
+</div>
+
+        </div>
+    </section>
+
+    <!-- ========== RIGHT COLUMN: Treatment Recommendations ========== -->
+    <section class="col-panel col-right" id="panel-treatment" aria-label="Treatment Recommendations">
+        <div class="panel-header-bar">
+            <i data-lucide="stethoscope" class="lucide-icon"></i>
+            <h2 data-i18n="panels.whatCanIDo">What Can I Do?</h2>
+            <button class="panel-collapse-btn" data-panel="panel-treatment" aria-label="Collapse section" aria-expanded="true">
+                <i data-lucide="chevron-up" class="lucide-icon"></i>
+            </button>
+        </div>
+        <p class="panel-subtitle" data-i18n="panels.takeActionSubtitle">Evidence-based steps to reduce your risk</p>
+        <div class="panel-body">
+<div class="panel-body-inner">
+            <!-- Simulation Results: shown when at least one treatment is simulated -->
+            <div id="simulation-results" style="display:none">
+                <div class="sim-risk-card">
+                    <span class="sim-risk-label">Your Risk with<br>Chosen Treatment</span>
+                    <div class="risk-field-value risk-field-value--centered" aria-live="polite">
+                        <div class="risk-value-main">
+                            <span id="chosen-risk-percentage" class="risk-number">0.0</span><span id="chosen-risk-unit" class="risk-unit">%</span>
+                        </div>
+                    </div>
+                    <!-- keep orig-risk-display for JS but hidden — still updated by renderChosenRisk -->
+                    <span id="orig-risk-display" style="display:none">0.0</span>
+                </div>
+                <div id="treatment-reduction-badge" class="treatment-reduction-badge" style="display:none"></div>
+            </div>
+            <div class="treatment-overview" id="treatment-overview" role="region" aria-live="polite" aria-label="Treatment overview with expandable recommendations sorted by risk contribution">
+                <!-- Populated by ui-controller.js -->
+            </div>
+            <!-- Legacy container (kept for JS compatibility) -->
+            <div id="dynamic-treatments" style="display:none;"></div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Application Scripts (modular architecture) -->
+<script src="js/config.js?v=cvd-treatments-1"></script>
+<script src="js/i18n/i18n-service.js?v=cvd-treatments-1"></script>
+<script src="js/i18n/i18n-ui.js"></script>
+<script src="js/conversion-service.js"></script>
+<script src="js/risk-model.js?v=cvd-treatments-4"></script>
+<script src="js/ui-helpers.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/ui-controller.js?v=additive-modifiable-share-1"></script>
+<script src="js/app.js?v=unit-toggle-1"></script>
+<script src="js/crypto-service.js"></script>
+<script src="js/patient-manager.js"></script>
+<script src="js/profile-warning.js"></script>
+<script src="js/treatment-simulator.js?v=cvd-treatments-7"></script>
+<!-- OCR Feature Scripts -->
+<script src="js/lab-report-parser.js"></script>
+<script src="js/ocr-service.js"></script>
+<script src="js/ocr-ui-controller.js"></script>
+<script src="js/dark-mode.js"></script>
+<script src="js/settings-panel.js"></script>
+<script src="js/main.js"></script>
+
+<!-- ===================== OCR MODAL ===================== -->
+<div class="modal-overlay ocr-modal-overlay" id="ocrModal" role="dialog" aria-modal="true" aria-labelledby="ocrModalTitle">
+    <div class="modal-content ocr-modal-content">
+        <!-- Header -->
+        <div class="modal-header">
+            <h3 id="ocrModalTitle">
+                <i data-lucide="scan-line" class="lucide-icon"></i> Scan Laboratory Report
+            </h3>
+            <button type="button" class="modal-close-btn" id="ocrModalClose" aria-label="Close">
+                <i data-lucide="x" class="lucide-icon"></i>
+            </button>
+        </div>
+
+        <!-- Step 1: Upload -->
+        <div class="ocr-step" id="ocrStepUpload">
+            <div class="modal-body">
+                <p class="modal-description">
+                    Upload a photo or PDF of your laboratory report.
+                    We will automatically extract your values.
+                </p>
+
+                <!-- Drop Zone -->
+                <div class="ocr-dropzone" id="ocrDropzone" role="button" tabindex="0" aria-label="Drop zone for file upload">
+                    <i data-lucide="upload-cloud" class="ocr-dropzone-icon"></i>
+                    <p class="ocr-dropzone-primary">Drag & drop file here</p>
+                    <p class="ocr-dropzone-secondary">or click to browse</p>
+                    <p class="ocr-dropzone-hint">Supports: JPG, PNG, PDF (max 10MB)</p>
+                </div>
+
+                <!-- Camera Button (Mobile) -->
+                <button type="button" class="ocr-camera-btn" id="ocrCameraBtn">
+                    <i data-lucide="camera" class="lucide-icon"></i> Take Photo
+                </button>
+
+                <!-- Privacy Notice -->
+                <div class="ocr-privacy-notice" role="note">
+                    <i data-lucide="shield-check" class="lucide-icon"></i>
+                    <span>Processing happens locally. No data is sent to servers.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Processing -->
+        <div class="ocr-step" id="ocrStepProcessing" style="display:none;">
+            <div class="modal-body">
+                <div class="ocr-processing">
+                    <div class="ocr-progress-ring" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <svg class="ocr-progress-svg" viewBox="0 0 100 100">
+                            <circle class="ocr-progress-track" cx="50" cy="50" r="45"/>
+                            <circle class="ocr-progress-fill" cx="50" cy="50" r="45" id="ocrProgressCircle"/>
+                        </svg>
+                        <span class="ocr-progress-percentage" id="ocrProgressPercentage">0%</span>
+                    </div>
+
+                    <div class="ocr-status-steps">
+                        <div class="ocr-status-step active" id="ocrStepStatusUpload">
+                            <i data-lucide="check-circle" class="ocr-step-icon"></i>
+                            <span class="ocr-step-label">Upload complete</span>
+                        </div>
+                        <div class="ocr-status-step" id="ocrStepStatusAnalyze">
+                            <i data-lucide="check-circle" class="ocr-step-icon"></i>
+                            <i data-lucide="loader-2" class="ocr-step-icon ocr-step-loading"></i>
+                            <span class="ocr-step-label">Analyzing image...</span>
+                        </div>
+                        <div class="ocr-status-step" id="ocrStepStatusExtract">
+                            <i data-lucide="check-circle" class="ocr-step-icon"></i>
+                            <i data-lucide="loader-2" class="ocr-step-icon ocr-step-loading"></i>
+                            <span class="ocr-step-label">Extracting values...</span>
+                        </div>
+                        <div class="ocr-status-step" id="ocrStepStatusValidate">
+                            <i data-lucide="check-circle" class="ocr-step-icon"></i>
+                            <i data-lucide="loader-2" class="ocr-step-icon ocr-step-loading"></i>
+                            <span class="ocr-step-label">Validating...</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="ocr-cancel-btn" id="ocrCancelBtn">Cancel Processing</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Review -->
+        <div class="ocr-step" id="ocrStepReview" style="display:none;">
+            <div class="modal-body">
+                <h4 class="ocr-review-title">Extracted Values</h4>
+                <p class="ocr-review-subtitle">Please review before importing.</p>
+
+                <div class="ocr-results-grid" id="ocrResultsGrid">
+                    <!-- Dynamically populated by JS -->
+                </div>
+
+                <div class="ocr-summary" id="ocrSummary" style="display:none;">
+                    <div class="ocr-summary-stats">
+                        <span class="ocr-stat">
+                            <i data-lucide="check-circle"></i>
+                            <strong id="ocrStatDetected">0</strong> detected
+                        </span>
+                        <span class="ocr-stat">
+                            <i data-lucide="alert-circle"></i>
+                            <strong id="ocrStatReview">0</strong> need review
+                        </span>
+                        <span class="ocr-stat">
+                            <i data-lucide="x-circle"></i>
+                            <strong id="ocrStatNotFound">0</strong> not found
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="modal-btn modal-btn-secondary" id="ocrBackBtn">Back</button>
+                <button type="button" class="modal-btn modal-btn-primary" id="ocrImportBtn">
+                    <i data-lucide="check" class="lucide-icon"></i> Import Values
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Error -->
+        <div class="ocr-step" id="ocrStepError" style="display:none;">
+            <div class="modal-body">
+                <div class="ocr-error">
+                    <div class="ocr-error-icon">
+                        <i data-lucide="x-circle"></i>
+                    </div>
+                    <h3 class="ocr-error-title">Could Not Process Image</h3>
+                    <p class="ocr-error-message" id="ocrErrorMessage">
+                        The image quality is too low for reliable text recognition.
+                    </p>
+
+                    <div class="ocr-error-suggestions">
+                        <h4>Tips for better results:</h4>
+                        <ul>
+                            <li><i data-lucide="sun"></i> Use good lighting</li>
+                            <li><i data-lucide="scan"></i> Keep the document flat</li>
+                            <li><i data-lucide="camera"></i> Ensure text is in focus</li>
+                            <li><i data-lucide="maximize"></i> Capture the full page</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="modal-btn modal-btn-secondary" id="ocrManualBtn">Enter Manually</button>
+                <button type="button" class="modal-btn modal-btn-primary" id="ocrRetryBtn">
+                    <i data-lucide="refresh-cw" class="lucide-icon"></i> Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== ENCRYPTION MODALS ===================== -->
+
+<!-- Export Encryption Modal -->
+<div class="modal-overlay" id="encryptionModal" role="dialog" aria-modal="true" aria-labelledby="encModalTitle" style="display:none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="encModalTitle"><i data-lucide="shield" class="lucide-icon"></i> Secure Export</h3>
+            <button type="button" class="modal-close-btn" id="encModalClose" aria-label="Close">
+                <i data-lucide="x" class="lucide-icon"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-description">Choose how your patient data should be protected.</p>
+
+            <!-- Radio Options -->
+            <div class="radio-group" role="radiogroup" aria-label="Encryption options">
+                <label class="radio-option">
+                    <input type="radio" name="encryptionOption" value="none" id="encOptionNone" checked>
+                    <span class="radio-custom"></span>
+                    <span class="radio-label">
+                        <i data-lucide="unlock" class="lucide-icon"></i>
+                        <span>
+                            <strong>No Password</strong>
+                            <small>File is directly readable</small>
+                        </span>
+                    </span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="encryptionOption" value="password" id="encOptionPassword">
+                    <span class="radio-custom"></span>
+                    <span class="radio-label">
+                        <i data-lucide="lock" class="lucide-icon"></i>
+                        <span>
+                            <strong>Encrypt with Password</strong>
+                            <small>AES-256 Encryption</small>
+                        </span>
+                    </span>
+                </label>
+            </div>
+
+            <!-- Password Section (hidden by default) -->
+            <div class="password-section" id="encPasswordSection" style="display:none;">
+                <div class="password-input-wrapper">
+                    <input
+                        type="password"
+                        id="encPasswordInput"
+                        class="password-input"
+                        placeholder="Enter password (min. 8 characters)"
+                        minlength="8"
+                        autocomplete="new-password"
+                        aria-describedby="encPasswordError"
+                    >
+                    <button type="button" class="password-toggle-btn" id="encPasswordToggle" aria-label="Show password">
+                        <i data-lucide="eye" class="lucide-icon" id="encPasswordToggleIcon"></i>
+                    </button>
+                </div>
+                <p class="password-error" id="encPasswordError" role="alert" style="display:none;">
+                    <i data-lucide="alert-circle" class="lucide-icon"></i>
+                    Password must be at least 8 characters long
+                </p>
+
+                <!-- Quick Options -->
+                <div class="quick-options" id="encQuickOptions" style="display:none;">
+                    <span class="quick-options-label">Quick select:</span>
+                    <button type="button" class="quick-option-btn" id="encUseLastPassword" style="display:none;">
+                        <i data-lucide="history" class="lucide-icon"></i>
+                        Last Password
+                    </button>
+                    <button type="button" class="quick-option-btn" id="encUseDefaultPassword" style="display:none;">
+                        <i data-lucide="star" class="lucide-icon"></i>
+                        Default Password
+                    </button>
+                </div>
+
+                <!-- Checkboxes -->
+                <div class="checkbox-group">
+                    <label class="checkbox-option">
+                        <input type="checkbox" id="encRememberSession" aria-label="Remember password for this session">
+                        <span class="checkbox-custom"></span>
+                        <span>Remember password for this session</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" id="encSetDefault" aria-label="Set as default for all exports">
+                        <span class="checkbox-custom"></span>
+                        <span>Set as default for all exports</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="modal-btn modal-btn-secondary" id="encCancelBtn">
+                Cancel
+            </button>
+            <button type="button" class="modal-btn modal-btn-primary" id="encDownloadBtn">
+                <i data-lucide="download" class="lucide-icon"></i>
+                Download
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Import Password Prompt Modal -->
+<div class="modal-overlay" id="passwordPromptModal" role="dialog" aria-modal="true" aria-labelledby="pwdPromptTitle" style="display:none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="pwdPromptTitle"><i data-lucide="lock" class="lucide-icon"></i> Encrypted File</h3>
+            <button type="button" class="modal-close-btn" id="pwdPromptClose" aria-label="Close">
+                <i data-lucide="x" class="lucide-icon"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-description">This file is password protected. Please enter the password to decrypt it.</p>
+
+            <div class="password-input-wrapper">
+                <input
+                    type="password"
+                    id="pwdPromptInput"
+                    class="password-input"
+                    placeholder="Enter password"
+                    autocomplete="current-password"
+                    aria-describedby="pwdPromptError"
+                >
+                <button type="button" class="password-toggle-btn" id="pwdPromptToggle" aria-label="Show password">
+                    <i data-lucide="eye" class="lucide-icon" id="pwdPromptToggleIcon"></i>
+                </button>
+            </div>
+            <p class="password-error" id="pwdPromptError" role="alert" style="display:none;">
+                <i data-lucide="alert-circle" class="lucide-icon"></i>
+                <span id="pwdPromptErrorText">Wrong password</span>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="modal-btn modal-btn-secondary" id="pwdPromptCancelBtn">
+                Cancel
+            </button>
+            <button type="button" class="modal-btn modal-btn-primary" id="pwdPromptDecryptBtn">
+                <i data-lucide="unlock" class="lucide-icon"></i>
+                Decrypt
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Warning Modal - shown when simulating treatment without profile -->
+<div class="modal-overlay" id="profileWarningModal" role="dialog" aria-modal="true" aria-labelledby="profileWarnTitle" style="display:none;">
+    <div class="modal-content" style="max-width: 420px;">
+        <div class="modal-header">
+            <h3 id="profileWarnTitle" data-i18n="modals.profileWarning.title">
+                <i data-lucide="alert-circle" class="lucide-icon"></i>
+                Reset All Values?
+            </h3>
+            <button type="button" class="modal-close-btn" id="profileWarnClose" aria-label="Close">
+                <i data-lucide="x" class="lucide-icon"></i>
+            </button>
+        </div>
+        <div class="modal-body" style="text-align: center; padding: 24px;">
+            <div class="profile-warn-icon">
+                <i data-lucide="alert-triangle" class="lucide-icon"></i>
+            </div>
+            <p style="font-size: 16px; color: var(--text-primary); margin-bottom: 8px; font-weight: 500;" data-i18n="modals.profileWarning.message1">
+                You have unsaved changes.
+            </p>
+            <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 24px;" data-i18n="modals.profileWarning.message2">
+                Resetting will discard your current data.
+            </p>
+        </div>
+        <div class="modal-footer" style="flex-direction: column; gap: 10px;">
+            <button type="button" class="modal-btn modal-btn-primary" id="profileWarnCreateBtn" data-i18n="modals.profileWarning.create">
+                <i data-lucide="user-plus" class="lucide-icon"></i>
+                Create Profile
+            </button>
+            <button type="button" class="modal-btn modal-btn-secondary" id="profileWarnContinueBtn" data-i18n="modals.profileWarning.continue">
+                Reset
+            </button>
+            <button type="button" class="modal-btn modal-btn-secondary" id="profileWarnCancelBtn" data-i18n="modals.profileWarning.cancel">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

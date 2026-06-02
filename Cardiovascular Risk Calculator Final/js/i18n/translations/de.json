@@ -1,0 +1,199 @@
+{
+  "_meta": {
+    "language": "Deutsch",
+    "code": "de"
+  },
+  "nav": {
+    "brand": "Diabetes Risikorechner",
+    "reset": "Zurücksetzen",
+    "restoreProfile": "Profilwerte wiederherstellen",
+    "resetDefaults": "Auf Standard zurücksetzen",
+    "riskTimeline": "Risiko-Zeitleiste",
+    "selectProfile": "Profil auswählen",
+    "language": "Sprache wählen"
+  },
+  "hero": {
+    "title": "9-Jahres Diabetes-Risiko",
+    "expandLabel": "Was bedeutet das?",
+    "subtitle": "Basierend auf dem ARIC-Studie logistischen Regressionsmodell (Schmidt et al. 2005)"
+  },
+  "factors": {
+    "age": "Alter",
+    "sex": "Geschlecht",
+    "race": "Ethnizität",
+    "parentHist": "Elterlicher Diabetes",
+    "sbp": "Blutdruck",
+    "waist": "Taille",
+    "height": "Größe",
+    "fastGlu": "Nüchternblutzucker",
+    "cholHDL": "HDL-Cholesterin",
+    "cholTri": "Blutfette (Triglyceride)"
+  },
+  "units": {
+    "years": "Jahre",
+    "male": "Männlich",
+    "female": "Weiblich",
+    "other": "Divers",
+    "black": "Schwarz",
+    "yes": "Ja",
+    "no": "Nein",
+    "us": "US",
+    "si": "SI"
+  },
+  "sections": {
+    "demographic": "Demografische Daten",
+    "clinical": "Klinische Daten",
+    "treatments": "Behandlungsempfehlungen",
+    "contributions": "Risikofaktor-Beiträge"
+  },
+  "summary": {
+    "age": "Alter",
+    "glucose": "Glukose",
+    "waist": "Taille",
+    "bp": "Blutdruck",
+    "hdl": "HDL",
+    "tg": "TG"
+  },
+  "treatments": {
+    "fastGlu": {
+      "title": "Nüchternblutzucker-Management",
+      "therapy1_name": "Standard-Medikation",
+      "therapy1_desc": "Metformin ist oft der erste Schritt zur Blutzuckerkontrolle.",
+      "therapy2_name": "Herz- & Nierenschutz",
+      "therapy2_desc": "Bei Herz- oder Nierenproblemen fragen Sie Ihren Arzt nach neueren Medikamenten, die diese Organe speziell schützen (SGLT2-Inhibitoren oder GLP-1) und gleichzeitig das Gewicht unterstützen."
+    },
+    "sbp": {
+      "title": "Blutdruckkontrolle",
+      "therapy1_name": "Kombinationsmedikation",
+      "therapy1_desc": "Es wird empfohlen, mit einer Kombination verschiedener Blutdruckmedikamente zu beginnen (z.B. RAS-Hemmer und CCBs).",
+      "therapy2_name": "Herzgesunde Ernährung",
+      "therapy2_desc": "Reduzierung von Alkohol- und Natriumkonsum, erhöhter Gemüseverzehr, Verwendung von fettarmen Milchprodukten können den Blutdruck natürlich senken."
+    },
+    "cholHDL": {
+      "title": "HDL-Cholesterin-Verbesserung",
+      "therapy1_name": "Regelmäßige Bewegung",
+      "therapy1_desc": "Zielen Sie auf 150 Minuten pro Woche Aktivität wie schnelles Gehen oder 75 Minuten intensives Training ab.",
+      "therapy2_name": "Medikation",
+      "therapy2_desc": "CETP-Inhibitoren und cholesterinsenkende Medikamente (Statine) können auch helfen, das HDL zu erhöhen."
+    },
+    "cholTri": {
+      "title": "Behandlung der Blutfette (Triglyceride)",
+      "therapy1_name": "Gesunder Lebensstil",
+      "therapy1_desc": "Rauchstopp und gesunde Fette (Olivenöl, Nüsse, Fisch) helfen allesamt und sollten zuerst versucht werden.",
+      "therapy2_name": "Verschreibungspflichtiges Fischöl",
+      "therapy2_desc": "Wenn die Blutfette (Triglyceride) weiterhin hoch bleiben, kann spezielles verschreibungspflichtiges Fischöl (Icosapent-Ethyl) in Betracht gezogen werden.",
+      "therapy3_name": "Medikation",
+      "therapy3_desc": "Fibrate oder cholesterinsenkende Medikamente (Statine) können auch helfen, die Triglyceride zu senken."
+    },
+    "waist": {
+      "title": "Gewichtsmanagement",
+      "therapy1_name": "Ernährung & Bewegung",
+      "therapy1_desc": "Die Reduzierung der täglichen Kalorien und mehr Bewegung führt zu stetigem Gewichtsverlust.",
+      "therapy2_name": "Medikamente",
+      "therapy2_desc": "Glukose-senkende Arzneimittel mit zusätzlicher gewichtsreduzierender Wirkung (z.B. GLP-1RA) können ebenfalls helfen.",
+      "surgical": "Chirurgische Optionen",
+      "surgical_desc": "Bei erheblicher Fettleibigkeit mit gesundheitlichen Problemen kann eine Gewichtsreduktionsoperation besprochen werden."
+    }
+  },
+  "buttons": {
+    "simulate": "Behandlung simulieren",
+    "simulateActive": "Simuliere...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "continue": "Weiter",
+    "createProfile": "Profil erstellen",
+    "add": "Hinzufügen",
+    "export": "Exportieren .xlsx / .drc",
+    "import": "Importieren .xlsx / .drc",
+    "scan": "Laborbericht scannen",
+    "undoTreatment": "Behandlung für {factor} rückgängig machen",
+    "undo": "Rückgängig",
+    "confirm": "Bestätigen",
+    "ok": "OK"
+  },
+  "patientManager": {
+    "title": "Meine Profile",
+    "activeProfile": "Aktives Profil",
+    "noProfile": "Kein Profil ausgewählt",
+    "savedProfiles": "Gespeicherte Profile",
+    "addNew": "Neues Profil hinzufügen",
+    "placeholder": "Profilname...",
+    "empty": "Noch keine Profile gespeichert.",
+    "importExport": "Import / Export / OCR"
+  },
+  "timeline": {
+    "title": "Risiko-Zeitleiste",
+    "hint": "Simulieren Sie Behandlungen, um Risikoänderungen über Zeit zu verfolgen",
+    "setBaseline": "Baseline setzen",
+    "snapshot": "Schnappschuss",
+    "empty": "Setzen Sie eine Baseline und fügen Sie Schnappschüsse hinzu, um Ihr Risiko über Szenarien zu verfolgen."
+  },
+  "models": {
+    "clinical": {
+      "name": "Nur Klinisch",
+      "description": "Nur Körpermaße & Demografie, kein Bluttest nötig"
+    },
+    "clinicalGlucose": {
+      "name": "Klinisch + Glukose",
+      "description": "Klinische Werte plus Nüchternglukose"
+    },
+    "clinicalGlucoseLipids": {
+      "name": "Klinisch + Glukose + Lipide",
+      "description": "Vollständiges Modell mit allen Laborwerten"
+    },
+    "accuracy": {
+      "basis": "Basis",
+      "gut": "Gut",
+      "beste": "Beste"
+    }
+  },
+  "zones": {
+    "normal": "Normal",
+    "elevated": "Erhöht",
+    "high": "Hoch",
+    "veryHigh": "Sehr hoch",
+    "diabetes": "Diabetes",
+    "prediabetes": "Prädiabetes",
+    "low": "Niedrig"
+  },
+  "modals": {
+    "profileWarning": {
+      "title": "Alle Werte zurücksetzen?",
+      "message": "Sie haben ungespeicherte Änderungen. Das Zurücksetzen verwirft Ihre aktuellen Daten.",
+      "message1": "Sie haben ungespeicherte Änderungen.",
+      "message2": "Das Zurücksetzen verwirft Ihre aktuellen Daten.",
+      "create": "Profil erstellen",
+      "continue": "Zurücksetzen",
+      "cancel": "Abbrechen"
+    },
+    "simulationSaveWarning": {
+      "message": "Eine Behandlungssimulation ist aktiv. Was möchten Sie speichern?",
+      "saveOriginal": "Originalwerte speichern",
+      "saveSimulated": "Simulierte Werte speichern",
+      "saveBoth": "Beide speichern",
+      "suffixOriginal": "(Original)",
+      "suffixSimulated": "(Simuliert)"
+    },
+    "simulationCloseWarning": {
+      "message": "Sie haben ein Profil gespeichert. Die Simulation ist noch aktiv. Was möchten Sie tun?",
+      "messageBoth": "Sie haben beide Profile gespeichert. Welches möchten Sie laden?",
+      "loadProfile": "Profil laden",
+      "loadOriginal": "Originalprofil laden",
+      "loadSimulated": "Simuliertes Profil laden",
+      "keepCurrent": "Aktuellen Zustand behalten"
+    },
+    "ocr": {
+      "title": "Laborbericht scannen",
+      "instructions": "Machen Sie ein Foto oder laden Sie Ihren Laborbericht hoch",
+      "camera": "Kamera",
+      "upload": "Datei hochladen",
+      "review": "Ergebnisse überprüfen",
+      "confidence_high": "Hohe Konfidenz",
+      "confidence_medium": "Mittlere Konfidenz",
+      "confidence_low": "Niedrige Konfidenz"
+    }
+  },
+  "aria": {
+    "simulatedSlider": "(simuliert)"
+  }
+}

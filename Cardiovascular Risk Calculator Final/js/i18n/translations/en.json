@@ -1,0 +1,176 @@
+{
+  "_meta": {
+    "language": "English",
+    "code": "en"
+  },
+  "nav": {
+    "brand": "Cardiovascular Risk Calculator",
+    "reset": "Reset",
+    "restoreProfile": "Restore profile values",
+    "resetDefaults": "Reset to defaults",
+    "riskTimeline": "Risk Timeline",
+    "selectProfile": "Select Profile",
+    "language": "Select Language"
+  },
+  "hero": {
+    "title": "10-Year Cardiovascular Risk",
+    "expandLabel": "What does that mean?",
+    "subtitle": "Based on the General CVD risk equation"
+  },
+  "factors": {
+    "age": "Age",
+    "sex": "Sex",
+    "trtBp": "Treatment for Hypertension",
+    "sbp": "Systolic Blood Pressure",
+    "smoking": "Smoking",
+    "diabetes": "Diabetes",
+    "cholHDL": "HDL Cholesterol",
+    "totalChol": "Total Cholesterol"
+  },
+  "units": {
+    "years": "years",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "black": "Black",
+    "yes": "Yes",
+    "no": "No",
+    "us": "US",
+    "si": "SI"
+  },
+  "sections": {
+    "demographic": "Patient Data",
+    "clinical": "Risk Factors",
+    "treatments": "Treatment Recommendations",
+    "contributions": "Risk Factor Contributions"
+  },
+  "summary": {
+    "age": "Age",
+    "bp": "SBP",
+    "hdl": "HDL",
+    "totalChol": "Total-C"
+  },
+  "treatments": {
+    "sbp": {
+      "title": "Blood Pressure Control",
+      "therapy1_name": "Antihypertensive therapy",
+      "therapy1_desc": "Medication review or intensification can lower systolic blood pressure; randomized evidence shows fewer cardiovascular events per 5 mmHg SBP reduction.",
+      "therapy2_name": "DASH-style lifestyle",
+      "therapy2_desc": "DASH nutrition, sodium reduction, weight management, regular activity, and lower alcohol intake can move blood pressure toward the healthy range."
+    },
+    "totalChol": {
+      "title": "Total Cholesterol Reduction",
+      "therapy1_name": "LDL-lowering medication",
+      "therapy1_desc": "Statins are first-line for cardiovascular risk reduction; each 1 mmol/L LDL-C reduction lowers major vascular events by about 22%.",
+      "therapy2_name": "Heart-healthy diet",
+      "therapy2_desc": "Replacing saturated fat, increasing fiber, and improving overall dietary quality supports lower atherogenic cholesterol."
+    },
+    "cholHDL": {
+      "title": "HDL Support",
+      "therapy1_name": "Regular physical activity",
+      "therapy1_desc": "Aerobic and combined training can modestly raise HDL and improves cardiovascular risk through several pathways.",
+      "therapy2_name": "Treat the causes",
+      "therapy2_desc": "Weight management, smoking cessation, and triglyceride/LDL management are preferred; medication solely to raise HDL has not reliably reduced events."
+    },
+    "smoking": {
+      "title": "Smoking Cessation",
+      "therapy1_name": "Structured quit support",
+      "therapy1_desc": "Behavioral counseling plus nicotine replacement, varenicline, or bupropion improves quit success and reduces cardiovascular risk.",
+      "therapy2_name": "Long-term prevention",
+      "therapy2_desc": "Avoiding relapse is important because cardiovascular risk falls within years after quitting but can remain elevated for a decade or more."
+    }
+  },
+  "buttons": {
+    "simulate": "Simulate Treatment",
+    "simulateActive": "Simulating...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "createProfile": "Create Profile",
+    "add": "Add",
+    "export": "Export .xlsx / .drc",
+    "import": "Import .xlsx / .drc",
+    "scan": "Scan Lab Report",
+    "undoTreatment": "Undo treatment for {factor}",
+    "undo": "Undo",
+    "confirm": "Confirm",
+    "ok": "OK"
+  },
+  "patientManager": {
+    "title": "My Profiles",
+    "activeProfile": "Active Profile",
+    "noProfile": "No profile selected",
+    "savedProfiles": "Saved Profiles",
+    "addNew": "Add New Profile",
+    "placeholder": "Profile name...",
+    "empty": "No profiles saved yet.",
+    "importExport": "Import / Export / OCR"
+  },
+  "timeline": {
+    "title": "Risk Timeline",
+    "hint": "Simulate treatments to track risk changes over time",
+    "setBaseline": "Set Baseline",
+    "snapshot": "Snapshot",
+    "empty": "Set a baseline and add snapshots to track your risk over scenarios."
+  },
+  "models": {
+    "gencardioLipids": {
+      "name": "General CVD + Lipids",
+      "description": "10-year cardiovascular risk with lipids"
+    },
+    "accuracy": {
+      "basis": "Basic",
+      "gut": "Good",
+      "beste": "Best"
+    }
+  },
+  "zones": {
+    "normal": "Normal",
+    "elevated": "Elevated",
+    "high": "High",
+    "veryHigh": "Very High",
+    "diabetes": "Diabetes",
+    "prediabetes": "Prediabetes",
+    "low": "Low"
+  },
+  "modals": {
+    "profileWarning": {
+      "title": "Reset All Values?",
+      "message": "You have unsaved changes. Resetting will discard your current data.",
+      "message1": "You have unsaved changes.",
+      "message2": "Resetting will discard your current data.",
+      "create": "Create Profile",
+      "continue": "Reset",
+      "cancel": "Cancel"
+    },
+    "simulationSaveWarning": {
+      "message": "You have an active treatment simulation. What would you like to save?",
+      "saveOriginal": "Save Original",
+      "saveSimulated": "Save Simulated",
+      "saveBoth": "Save Both",
+      "suffixOriginal": "(Original)",
+      "suffixSimulated": "(Simulated)"
+    },
+    "simulationCloseWarning": {
+      "message": "You saved a profile. The simulation is still active. What would you like to do?",
+      "messageBoth": "You saved both profiles. Which would you like to load?",
+      "loadProfile": "Load Profile",
+      "loadOriginal": "Load Original Profile",
+      "loadSimulated": "Load Simulated Profile",
+      "keepCurrent": "Keep Current State"
+    },
+    "ocr": {
+      "title": "Scan Lab Report",
+      "instructions": "Take a photo or upload your lab report",
+      "camera": "Camera",
+      "upload": "Upload File",
+      "review": "Review Results",
+      "confidence_high": "High confidence",
+      "confidence_medium": "Medium confidence",
+      "confidence_low": "Low confidence"
+    }
+  },
+  "aria": {
+    "simulatedSlider": "(simulated)"
+  }
+}
